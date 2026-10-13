@@ -7,9 +7,10 @@ from src.config import Config
 
 def setup_global_models():
     """Khởi tạo toàn cục mô hình Google Gemini LLM và mô hình Embedding Local (Nvidia GPU/CPU)."""
-    if not Config.GOOGLE_API_KEY and os.getenv("TESTING", "").lower() in ("1", "true"):
+    if not Config.GOOGLE_API_KEY:
         from llama_index.core.llms.mock import MockLLM
         Settings.llm = MockLLM()
+        print("[Models] ⚠️ GOOGLE_API_KEY chưa được thiết lập. Tạm thời sử dụng MockLLM cho đến khi thêm API key trong Secrets.")
     else:
         print(f"[Models] Khởi tạo mô hình Google Gemini '{Config.LLM_MODEL}'...")
         Settings.llm = GoogleGenAI(

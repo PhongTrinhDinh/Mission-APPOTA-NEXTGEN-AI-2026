@@ -43,6 +43,8 @@ logs/
 *.sqlite
 *.sqlite3
 *.db
+*.lock
+.lock
 
 # Test/tool caches
 .pytest_cache/

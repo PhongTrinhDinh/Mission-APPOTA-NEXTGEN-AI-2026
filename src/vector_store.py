@@ -19,6 +19,13 @@ class Qdrant_Manager:
             self.client = client
         else:
             db_path = location or getattr(Config, "QDRANT_LOCATION", "./qdrant_db")
+            # Dọn dẹp lock file cũ nếu có (thường do git commit hoặc crash từ phiên trước)
+            lock_file = os.path.join(db_path, ".lock")
+            if os.path.exists(lock_file):
+                try:
+                    os.remove(lock_file)
+                except Exception:
+                    pass
             self.client = QdrantClient(path=db_path)
 
         coll_name = collection_name or getattr(Config, "COLLECTION_NAME", "rag_collection")

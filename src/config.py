@@ -7,7 +7,10 @@ load_dotenv()
 class Config:
     GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY", "")
     if not GOOGLE_API_KEY and os.getenv("TESTING", "").lower() not in ("1", "true"):
-        raise ValueError("[!] Vui lòng cung cấp GOOGLE_API_KEY (hoặc GEMINI_API_KEY) trong file .env")
+        if os.getenv("SPACE_ID"):
+            print("[WARNING] ⚠️ Chưa tìm thấy GOOGLE_API_KEY trong Variables & Secrets của Hugging Face Space.")
+        else:
+            raise ValueError("[!] Vui lòng cung cấp GOOGLE_API_KEY (hoặc GEMINI_API_KEY) trong file .env")
     
     # Cấu hình LLM & Embedding Model
     LLM_MODEL = os.getenv("LLM_MODEL", "gemini-3.5-flash-lite")

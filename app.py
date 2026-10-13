@@ -173,10 +173,8 @@ except ImportError:
     pass
 
 if __name__ == "__main__":
-    # Trên Hugging Face Spaces (có biến SPACE_ID), platform tự động quản lý và khởi chạy ASGI server.
-    # Chỉ chạy uvicorn khi thực thi thủ công ở máy cục bộ (local).
-    if not os.getenv("SPACE_ID"):
-        import uvicorn
-        port = int(os.getenv("PORT", 8000))
-        uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
+    import uvicorn
+    port = int(os.getenv("PORT", 7860))
+    # Chạy uvicorn trực tiếp với app object để giữ tiến trình sống trên Spaces và tránh xung đột cổng
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
