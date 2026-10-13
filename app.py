@@ -146,6 +146,7 @@ def root_portal():
             <div style="margin-top: 28px;">
                 <a href="/docs" class="btn">Xem tài liệu Swagger API (/docs)</a>
                 <a href="/api/health" class="btn btn-outline">Kiểm tra Health Check</a>
+                <a href="/gradio" class="btn btn-outline">Gradio UI (/gradio)</a>
             </div>
         </div>
     </body>
@@ -153,6 +154,25 @@ def root_portal():
     """
     return HTMLResponse(content=html_content)
 
+# Tích hợp Gradio UI tương thích với Hugging Face Spaces (SDK: Gradio)
+try:
+    import gradio as gr
+
+    with gr.Blocks(title="Appota NextGen Enterprise Secure RAG") as demo:
+        gr.Markdown("# 🚀 Appota NextGen Enterprise Secure RAG Backend")
+        gr.Markdown(
+            "Hệ thống FastAPI Backend phân quyền RBAC & Hybrid Search đang hoạt động và phục vụ API cho Next.js Frontend."
+        )
+        with gr.Row():
+            gr.Markdown("- 📄 **Swagger API Docs:** [/docs](/docs)")
+            gr.Markdown("- 🩺 **Health Check:** [/api/health](/api/health)")
+            gr.Markdown("- 👥 **User Directory:** [/api/users](/api/users)")
+
+    app = gr.mount_gradio_app(app, demo, path="/gradio")
+except ImportError:
+    pass
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+    port = int(os.getenv("PORT", 7860))
+    uvicorn.run("app:app", host="0.0.0.0", port=port, reload=False)
