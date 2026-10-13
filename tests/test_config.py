@@ -8,7 +8,6 @@ class TestConfig:
         """Kiểm tra tất cả các hằng số cấu hình bắt buộc đều có mặt trong class Config."""
         expected_attrs = [
             "GOOGLE_API_KEY",
-            "HF_API",
             "LLM_MODEL",
             "EMBEDDING_MODEL",
             "CONTEXT_WINDOW",

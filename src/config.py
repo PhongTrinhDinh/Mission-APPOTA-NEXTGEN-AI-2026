@@ -26,6 +26,7 @@ class Config:
     LOCAL_MODEL_DIR = "./local_model"
     
     # Dữ liệu tài liệu & Người dùng
+    DATA_DIR = os.getenv("DATA_DIR", "data")
     DOCS_DIR = os.getenv("DOCS_DIR", "data")
     USERS_FILE = os.getenv("USERS_FILE", "users.json")
     SIMILARITY_TOP_K = int(os.getenv("SIMILARITY_TOP_K", "5"))
