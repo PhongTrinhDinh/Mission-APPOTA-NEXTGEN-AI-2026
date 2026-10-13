@@ -155,22 +155,25 @@ def root_portal():
     return HTMLResponse(content=html_content)
 
 # Tích hợp Gradio UI tương thích với Hugging Face Spaces (SDK: Gradio)
-try:
-    import gradio as gr
+def _setup_gradio_ui(fastapi_app):
+    try:
+        import gradio as gr
+        with gr.Blocks(title="Appota NextGen Enterprise Secure RAG") as ui:
+            gr.Markdown("# 🚀 Appota NextGen Enterprise Secure RAG Backend")
+            gr.Markdown(
+                "Hệ thống FastAPI Backend phân quyền RBAC & Hybrid Search đang hoạt động và phục vụ API cho Next.js Frontend."
+            )
+            with gr.Row():
+                gr.Markdown("- 📄 **Swagger API Docs:** [/docs](/docs)")
+                gr.Markdown("- 🩺 **Health Check:** [/api/health](/api/health)")
+                gr.Markdown("- 👥 **User Directory:** [/api/users](/api/users)")
 
-    with gr.Blocks(title="Appota NextGen Enterprise Secure RAG") as demo:
-        gr.Markdown("# 🚀 Appota NextGen Enterprise Secure RAG Backend")
-        gr.Markdown(
-            "Hệ thống FastAPI Backend phân quyền RBAC & Hybrid Search đang hoạt động và phục vụ API cho Next.js Frontend."
-        )
-        with gr.Row():
-            gr.Markdown("- 📄 **Swagger API Docs:** [/docs](/docs)")
-            gr.Markdown("- 🩺 **Health Check:** [/api/health](/api/health)")
-            gr.Markdown("- 👥 **User Directory:** [/api/users](/api/users)")
+        return gr.mount_gradio_app(fastapi_app, ui, path="/gradio")
+    except ImportError:
+        return fastapi_app
 
-    app = gr.mount_gradio_app(app, demo, path="/gradio")
-except ImportError:
-    pass
+app = _setup_gradio_ui(app)
+
 
 if __name__ == "__main__":
     import uvicorn
