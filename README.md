@@ -1,10 +1,9 @@
 ---
-title: "Appota NextGen AI RAG Backend"
-emoji: "🚀"
-colorFrom: "blue"
-colorTo: "indigo"
-sdk: "docker"
-app_file: "Dockerfile"
+title: Appota NextGen AI RAG Backend
+emoji: 🚀
+colorFrom: blue
+colorTo: indigo
+sdk: docker
 app_port: 7860
 pinned: false
 ---
