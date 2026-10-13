@@ -1,0 +1,23 @@
+[
+    {
+        "user_id": "U01",
+        "name": "Nguyễn Văn A",
+        "company": "Appota",
+        "dept": "HR",
+        "role_level": 3
+    },
+    {
+        "user_id": "U02",
+        "name": "Trần Thị B",
+        "company": "Kdata",
+        "dept": "Sales",
+        "role_level": 1
+    },
+    {
+        "user_id": "U03",
+        "name": "Lê Văn C",
+        "company": "Appota",
+        "dept": "Engineering",
+        "role_level": 1
+    }
+]
