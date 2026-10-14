@@ -15,8 +15,8 @@ class Config:
     EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
     
     # Tham số sinh văn bản & ngữ cảnh
-    CONTEXT_WINDOW = 4096
-    MAX_NEW_TOKENS = 512
+    CONTEXT_WINDOW = 32768
+    MAX_NEW_TOKENS = 2048
     TEMPERATURE = 0.1
     
     # Cấu hình lưu trữ Qdrant Vector DB

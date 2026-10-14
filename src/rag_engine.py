@@ -81,14 +81,30 @@ class SecureRAGEngine:
             query_engine = self.index.as_query_engine(**engine_kwargs)
 
         try:
-            return query_engine.query(user_query)
+            response = query_engine.query(user_query)
         except Exception as e:
             if "Sparse vector" in str(e) or "text-sparse-new" in str(e):
                 print(f"[RAG Engine] Cảnh báo ({e}). Tự động fallback về Dense Vector...")
                 engine_kwargs.pop("vector_store_query_mode", None)
                 fallback_engine = self.index.as_query_engine(**engine_kwargs)
-                return fallback_engine.query(user_query)
-            raise
+                response = fallback_engine.query(user_query)
+            else:
+                raise
+
+        # Xử lý trường hợp LlamaIndex trả về "Empty Response" hoặc chuỗi rỗng
+        resp_text = getattr(response, "response", "")
+        if not resp_text or resp_text.strip() == "Empty Response":
+            user_dept = user_context.get("dept", "Chưa xác định")
+            user_level = user_context.get("role_level", 1)
+            response.response = (
+                f"🔒 **Không tìm thấy thông tin phù hợp trong phạm vi quyền hạn của bạn.**\n\n"
+                f"- **Tài khoản:** Phòng ban `{user_dept}` | Cấp bậc: `Level {user_level}`\n"
+                f"- **Lý do:** Nội dung câu hỏi có thể thuộc tài liệu mật (yêu cầu cấp bậc cao hơn), "
+                f"thuộc phòng ban khác (bị cô lập bởi chính sách bảo mật RBAC), "
+                f"hoặc thông tin chưa tồn tại trong kho quy chế của doanh nghiệp."
+            )
+
+        return response
 
     def chat(self, user_query: str, user_context: dict) -> str:
         """Phương thức chat trả về chuỗi câu trả lời (duy trì tương thích ngược)."""

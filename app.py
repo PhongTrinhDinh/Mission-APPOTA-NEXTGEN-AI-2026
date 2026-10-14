@@ -57,9 +57,11 @@ async def lifespan(app: FastAPI):
             elif isinstance(vectors_param, dict) and "text-dense" in vectors_param:
                 current_dim = getattr(vectors_param["text-dense"], "size", None)
 
-            # text-embedding-004 có dimension là 768
-            expected_dim = 768
-            if current_dim is not None and current_dim != expected_dim:
+            points_count = getattr(coll_info, "points_count", 0) or 0
+            if points_count == 0:
+                print(f"[Qdrant] Collection '{collection_name}' đang có 0 điểm dữ liệu (chưa nạp hoặc deploy mới). Cần tiến hành nạp tài liệu...")
+                need_reingest = True
+            elif current_dim is not None and current_dim != expected_dim:
                 print(f"[Qdrant] Dimension cấu hình ({current_dim}) không khớp {expected_dim} (GoogleGenAIEmbedding). Cần tái lập chỉ mục...")
                 need_reingest = True
             elif getattr(Config, "ENABLE_HYBRID", True) and not has_sparse:
