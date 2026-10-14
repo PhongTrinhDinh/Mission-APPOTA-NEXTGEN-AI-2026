@@ -60,7 +60,32 @@ When launching the application, you are greeted with a clean, modern web interfa
 
 ---
 
-## Installation
+## ⚡ Quick Start with Docker (Recommended)
+
+You can run the entire system (FastAPI Backend + Next.js Frontend + Hybrid Vector DB) in a single command on any machine with Docker installed:
+
+```bash
+# 1. Clone repository
+git clone https://github.com/PhongTrinhDinh/Mission-APPOTA-NEXTGEN-AI-2026.git
+cd Mission-APPOTA-NEXTGEN-AI-2026
+
+# 2. Setup your .env file
+cp .env.example .env
+# Open .env and insert your GOOGLE_API_KEY="AIzaSy..."
+
+# 3. Start everything with Docker Compose
+docker compose up --build -d
+```
+
+- **Web UI:** 👉 [http://localhost:3000](http://localhost:3000)
+- **API Swagger Docs:** 👉 [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check:** 👉 [http://localhost:8000/api/health](http://localhost:8000/api/health)
+
+*(For detailed Docker usage and troubleshooting, refer to [DOCKER_GUIDE.md](DOCKER_GUIDE.md)).*
+
+---
+
+## Manual Installation (Without Docker)
 
 ### Prerequisites
 * **Python 3.10+** (Python 3.12 recommended)
