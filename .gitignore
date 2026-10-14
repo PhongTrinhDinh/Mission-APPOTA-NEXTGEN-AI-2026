@@ -46,6 +46,12 @@ logs/
 *.lock
 .lock
 
+# Keep pre-indexed lightweight Qdrant vector database (< 1MB) for cloud deployments
+!qdrant_db/
+!qdrant_db/**
+qdrant_db/.lock
+qdrant_db/**/.lock
+
 # Test/tool caches
 .pytest_cache/
 .mypy_cache/

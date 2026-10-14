@@ -1,6 +1,13 @@
 import os
 import sys
 
+# Tối ưu bộ nhớ RAM cho môi trường Cloud hạn chế (Render Free Tier 512MB)
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("VECLIB_MAXIMUM_THREADS", "1")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
+
 # Cấu hình encoding UTF-8 để hỗ trợ tiếng Việt trên console Windows
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
@@ -57,6 +64,7 @@ async def lifespan(app: FastAPI):
             elif isinstance(vectors_param, dict) and "text-dense" in vectors_param:
                 current_dim = getattr(vectors_param["text-dense"], "size", None)
 
+            expected_dim = 768
             points_count = getattr(coll_info, "points_count", 0) or 0
             if points_count == 0:
                 print(f"[Qdrant] Collection '{collection_name}' đang có 0 điểm dữ liệu (chưa nạp hoặc deploy mới). Cần tiến hành nạp tài liệu...")
@@ -103,6 +111,11 @@ async def lifespan(app: FastAPI):
     app.state.rag_engine = rag_engine
     app.state.auth_manager = auth_manager
     app.state.is_ready = True
+    
+    # Giải phóng bộ nhớ đệm (Garbage Collection) giúp giảm RAM tiêu thụ trên Render
+    import gc
+    gc.collect()
+
     print("[Server Startup] ✅ Hệ thống Enterprise Secure RAG đã sẵn sàng phục vụ API!")
     
     yield

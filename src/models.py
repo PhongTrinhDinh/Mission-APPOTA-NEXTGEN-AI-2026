@@ -20,8 +20,8 @@ def setup_global_models():
             max_tokens=Config.MAX_NEW_TOKENS
         )
         target_model = Config.EMBEDDING_MODEL
-        if target_model in ("text-embedding-004", "models/text-embedding-004"):
-            target_model = "gemini-embedding-001"
+        if target_model in ("text-embedding-004", "models/text-embedding-004", "gemini-embedding-001"):
+            target_model = "gemini-embedding-2"
 
         try:
             from google.genai import types
