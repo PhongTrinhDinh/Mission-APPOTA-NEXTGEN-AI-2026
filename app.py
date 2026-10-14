@@ -1,6 +1,5 @@
 import os
 import sys
-import torch
 
 # Cấu hình encoding UTF-8 để hỗ trợ tiếng Việt trên console Windows
 if hasattr(sys.stdout, "reconfigure"):
