@@ -11,7 +11,7 @@ from src.models import setup_global_models
 from src.vector_store import Qdrant_Manager
 
 def run():
-    print("[1/3] Khởi tạo mô hình (Embedding Local GPU & LLM)...")
+    print("[1/3] Khởi tạo mô hình (Google GenAI Embedding & LLM)...")
     setup_global_models()
 
     print("[2/3] Khởi tạo Qdrant Manager và tái lập chỉ mục Hybrid...")

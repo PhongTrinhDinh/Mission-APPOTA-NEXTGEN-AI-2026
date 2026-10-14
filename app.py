@@ -27,6 +27,12 @@ from src.api.routes import router as api_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Quản lý vòng đời khởi động và dọn dẹp tài nguyên của ứng dụng FastAPI."""
+    if os.getenv("TESTING", "").lower() in ("1", "true"):
+        setup_global_models()
+        app.state.is_ready = True
+        yield
+        return
+
     print("[Server Startup] Đang chuẩn bị hệ thống RAG...")
     
     # 1. Thiết lập mô hình
@@ -43,11 +49,38 @@ async def lifespan(app: FastAPI):
         if vector_store.client.collection_exists(collection_name):
             coll_info = vector_store.client.get_collection(collection_name)
             has_sparse = bool(getattr(coll_info.config.params, "sparse_vectors", None))
-            if getattr(Config, "ENABLE_HYBRID", True) and not has_sparse:
+            
+            # Kiểm tra vector dimension của dense vector
+            vectors_param = getattr(coll_info.config.params, "vectors", None)
+            current_dim = None
+            if hasattr(vectors_param, "size"):
+                current_dim = vectors_param.size
+            elif isinstance(vectors_param, dict) and "text-dense" in vectors_param:
+                current_dim = getattr(vectors_param["text-dense"], "size", None)
+
+            # text-embedding-004 có dimension là 768
+            expected_dim = 768
+            if current_dim is not None and current_dim != expected_dim:
+                print(f"[Qdrant] Dimension cấu hình ({current_dim}) không khớp {expected_dim} (GoogleGenAIEmbedding). Cần tái lập chỉ mục...")
+                need_reingest = True
+            elif getattr(Config, "ENABLE_HYBRID", True) and not has_sparse:
                 print(f"[Qdrant] Collection '{collection_name}' chưa có cấu hình Sparse Vector. Cần tái cấu trúc Hybrid...")
                 need_reingest = True
             else:
-                print(f"[Qdrant] Đã phát hiện collection '{collection_name}' (Hybrid Ready). Đang kết nối trực tiếp...")
+                # Kiểm tra dimension thực tế của các điểm dữ liệu đã lưu trữ
+                try:
+                    sample_pts, _ = vector_store.client.scroll(collection_name, limit=1, with_vectors=True)
+                    if sample_pts and sample_pts[0].vector is not None:
+                        vec_val = sample_pts[0].vector
+                        dense_vec = vec_val.get("text-dense") if isinstance(vec_val, dict) else vec_val
+                        if dense_vec is not None and len(dense_vec) != expected_dim:
+                            print(f"[Qdrant] Vector thực tế trên đĩa ({len(dense_vec)}) khác {expected_dim}. Cần tái lập chỉ mục...")
+                            need_reingest = True
+                except Exception:
+                    pass
+
+            if not need_reingest:
+                print(f"[Qdrant] Đã phát hiện collection '{collection_name}' (Hybrid Ready, dim={expected_dim}). Đang kết nối trực tiếp...")
                 index = VectorStoreIndex.from_vector_store(
                     vector_store=vector_store.vector_store,
                     embed_model=Settings.embed_model
@@ -56,7 +89,7 @@ async def lifespan(app: FastAPI):
             need_reingest = True
 
         if need_reingest:
-            print(f"[Qdrant] Đang tiến hành quét data/ và tái lập chỉ mục chuẩn Hybrid (Dense + Sparse BM25)...")
+            print(f"[Qdrant] Đang tiến hành quét data/ và tái lập chỉ mục chuẩn Hybrid (Dense 768 + Sparse BM25)...")
             index = vector_store.ingest_data_and_create_index(show_progress=False, recreate_collection=True)
     except Exception as e:
         print(f"[Qdrant] Lỗi kiểm tra collection ({e}). Đang tái lập chỉ mục...")

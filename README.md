@@ -23,7 +23,7 @@
 
 ### Core Features Explained Simply
 * **Deterministic RBAC Hard Filtering:** Access control is enforced at the database level before retrieval. If an Engineering employee asks about Sales commissions or executive compensation, unauthorized documents are filtered out prior to LLM reasoning.
-* **Hybrid Search (Dense + Sparse BM25):** Combines semantic vector understanding (`intfloat/multilingual-e5-large`) with exact keyword matching (`Qdrant/bm25`), ensuring accurate document retrieval for both conceptual queries and exact policy code references.
+* **Hybrid Search (Dense + Sparse BM25):** Combines semantic vector understanding (`text-embedding-004`) with exact keyword matching (`Qdrant/bm25`), ensuring accurate document retrieval for both conceptual queries and exact policy code references.
 * **Ultra-Fast FlashRank Reranker:** Uses a lightweight `ms-marco-MiniLM-L-12-v2` cross-encoder to rescore candidate passages, pushing the most pertinent clauses to the top of the context window.
 * **Context-Grounded Reasoning:** Powered by Google Gemini (`gemini-3.5-flash-lite`), generating clear, helpful answers with verifiable source document citations and refusal prompts for out-of-domain personal inquiries.
 
@@ -49,7 +49,7 @@ When launching the application, you are greeted with a clean, modern web interfa
 * **Vector Database:** [Qdrant Client](https://github.com/qdrant/qdrant-client) providing local embedded hybrid storage (Dense Vector + BM25 Sparse Index).
 * **Sparse Embedding:** [FastEmbed](https://github.com/qdrant/fastembed) for on-the-fly BM25 generation.
 * **Reranking Engine:** [FlashRank](https://github.com/PrithivirajDamodaran/FlashRank) for ultra-low latency CPU/GPU reranking.
-* **Dense Embedding:** [HuggingFace Transformers](https://huggingface.co/) & [PyTorch](https://pytorch.org/) running `multilingual-e5-large` with CUDA GPU acceleration.
+* **Dense Embedding:** [Google GenAI Embeddings](https://ai.google.dev/) running `text-embedding-004` (768-dim) for fast, lightweight, and high-precision semantic representations.
 * **LLM Integration:** [llama-index-llms-google-genai](https://developers.google.com/gemini) connecting to Google Gemini.
 * **Testing:** [Pytest](https://docs.pytest.org/) & [Pytest-Asyncio](https://pytest-asyncio.readthedocs.io/) with comprehensive scenario coverage.
 

@@ -12,7 +12,7 @@ class Config:
     
     # Cấu hình LLM & Embedding Model
     LLM_MODEL = os.getenv("LLM_MODEL", "gemini-3.5-flash-lite")
-    EMBEDDING_MODEL = "intfloat/multilingual-e5-large"
+    EMBEDDING_MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-004")
     
     # Tham số sinh văn bản & ngữ cảnh
     CONTEXT_WINDOW = 4096

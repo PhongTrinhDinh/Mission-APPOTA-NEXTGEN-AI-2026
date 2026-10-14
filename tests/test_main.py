@@ -5,7 +5,7 @@ from src.config import Config
 from llama_index.core import Settings
 
 class TestMainModule:
-    @patch("src.models.HuggingFaceEmbedding")
+    @patch("src.models.GoogleGenAIEmbedding")
     @patch("src.models.GoogleGenAI")
     def test_setup_global_models(self, mock_llm_cls, mock_embed_cls, monkeypatch):
         """Kiểm tra hàm khởi tạo model toàn cục setup_global_models() từ src.models."""
@@ -15,7 +15,7 @@ class TestMainModule:
 
         monkeypatch.setattr(Config, "GOOGLE_API_KEY", "test_key")
         mock_llm_instance = MockLLM()
-        mock_embed_instance = MockEmbedding(embed_dim=1024)
+        mock_embed_instance = MockEmbedding(embed_dim=768)
         mock_llm_cls.return_value = mock_llm_instance
         mock_embed_cls.return_value = mock_embed_instance
 

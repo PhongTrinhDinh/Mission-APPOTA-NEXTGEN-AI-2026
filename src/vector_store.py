@@ -87,6 +87,7 @@ class Qdrant_Manager:
 
     def recreate_hybrid_collection(self, collection_name: str = None):
         """Xóa collection cũ và khởi tạo lại collection với cấu trúc Hybrid Search (Dense + Sparse BM25)."""
+        import shutil
         coll_name = collection_name or getattr(Config, "COLLECTION_NAME", "rag_collection")
         try:
             if self.client.collection_exists(coll_name):
@@ -94,6 +95,15 @@ class Qdrant_Manager:
                 self.client.delete_collection(coll_name)
         except Exception as e:
             print(f"[Vector Store] Cảnh báo khi xóa collection: {e}")
+
+        # Xóa triệt để thư mục collection trên đĩa để QdrantLocal SQLite tạo schema mới tinh
+        db_path = getattr(Config, "QDRANT_LOCATION", "./qdrant_db")
+        coll_dir = os.path.join(db_path, "collection", coll_name)
+        if os.path.exists(coll_dir):
+            try:
+                shutil.rmtree(coll_dir, ignore_errors=True)
+            except Exception:
+                pass
 
         is_hybrid = getattr(Config, "ENABLE_HYBRID", True)
         sparse_model = getattr(Config, "SPARSE_MODEL", "Qdrant/bm25")

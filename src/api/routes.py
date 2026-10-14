@@ -1,4 +1,3 @@
-import torch
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from src.config import Config
@@ -24,7 +23,7 @@ def health_check(
     rag_engine: SecureRAGEngine = Depends(get_rag_engine)
 ) -> HealthResponse:
     """Trả về trạng thái hoạt động của RAG Engine, mô hình và cấu hình hệ thống."""
-    device_str = "Local GPU (CUDA)" if torch.cuda.is_available() else "Local CPU"
+    device_str = "Google GenAI Cloud"
     return HealthResponse(
         status="ok",
         app_name="Appota NextGen Enterprise Secure RAG API",

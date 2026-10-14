@@ -13,17 +13,12 @@ pyyaml>=6.0.2
 llama-index-core>=0.12.0
 llama-index-vector-stores-qdrant>=0.4.0
 llama-index-llms-google-genai>=0.4.0
-llama-index-embeddings-huggingface>=0.4.0
+llama-index-embeddings-google-genai>=0.4.0
 qdrant-client>=1.12.0
 fastembed>=0.4.0
 
-# Advanced RAG: FlashRank Reranker
+# Advanced RAG: FlashRank Reranker (Lightweight ONNX)
 flashrank>=0.2.9
-
-# Deep Learning & Embeddings (Local GPU/CPU)
-torch>=2.4.0
-transformers>=4.45.0
-sentence-transformers>=3.1.0
 
 # Testing & Quality Assurance
 pytest>=8.3.0

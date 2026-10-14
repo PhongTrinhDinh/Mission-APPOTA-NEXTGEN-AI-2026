@@ -51,11 +51,41 @@ def terminate_process(proc, name="tiến trình"):
         except Exception:
             pass
 
+def get_python_executable():
+    """Đảm bảo luôn ưu tiên sử dụng python trong môi trường ảo .venv của dự án nếu tồn tại."""
+    venv_python = BASE_DIR / ".venv" / ("Scripts" if platform.system() == "Windows" else "bin") / ("python.exe" if platform.system() == "Windows" else "python")
+    if venv_python.exists():
+        return str(venv_python)
+    return sys.executable
+
+def free_port(port: int):
+    """Kiểm tra và giải phóng cổng nếu có tiến trình mồ côi cũ đang chiếm giữ."""
+    try:
+        if platform.system() == "Windows":
+            res = subprocess.run(
+                ["netstat", "-ano"],
+                capture_output=True,
+                text=True,
+                errors="ignore"
+            )
+            for line in res.stdout.splitlines():
+                if f":{port}" in line and ("LISTENING" in line.upper() or "BOUND" in line.upper()):
+                    parts = line.strip().split()
+                    pid = parts[-1]
+                    if pid.isdigit() and int(pid) > 0 and int(pid) != os.getpid():
+                        print(f"[Port] ⚠️ Cổng {port} đang bị tiến trình cũ (PID: {pid}) chiếm dụng. Đang giải phóng...")
+                        subprocess.run(["taskkill", "/F", "/T", "/PID", pid], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                        time.sleep(0.5)
+    except Exception:
+        pass
+
 def run_backend(host="0.0.0.0", port=8000, reload=True):
     """Khởi chạy máy chủ FastAPI Backend bằng Uvicorn."""
-    print(f"[Backend] Khởi chạy FastAPI tại http://{host}:{port} ...")
+    free_port(port)
+    py_bin = get_python_executable()
+    print(f"[Backend] Khởi chạy FastAPI tại http://{host}:{port} (Python: {py_bin}) ...")
     cmd = [
-        sys.executable,
+        py_bin,
         "-m", "uvicorn",
         "app:app",
         "--host", host,
@@ -71,6 +101,8 @@ def run_frontend(port=3000):
     if not FRONTEND_DIR.exists():
         print(f"[Frontend] ❌ Không tìm thấy thư mục frontend tại {FRONTEND_DIR}")
         return None
+
+    free_port(port)
 
     # Kiểm tra node_modules
     node_modules = FRONTEND_DIR / "node_modules"
