@@ -220,7 +220,7 @@ export default function Home() {
             title={isBackendOnline === false ? "Click để thử kết nối lại với Backend" : ""}
           >
             {isBackendOnline === true
-              ? "FastAPI Online (8000)"
+              ? "FastAPI Online"
               : isBackendOnline === false
               ? "Đang kết nối... (Click thử lại)"
               : "Đang kiểm tra..."}
@@ -230,7 +230,7 @@ export default function Home() {
           </button>
           <a
             id="link-swagger-docs"
-            href="http://127.0.0.1:8000/docs"
+            href={process.env.NEXT_PUBLIC_SWAGGER_URL || "/docs"}
             target="_blank"
             rel="noopener noreferrer"
             className="btn-nav"

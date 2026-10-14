@@ -49,11 +49,24 @@ export interface IngestResponse {
   documents_count?: number;
 }
 
-// Hỗ trợ cả qua Next.js rewrite (/api) hoặc direct Backend URL
-const BACKEND_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+/**
+ * Lấy URL đích để gọi API:
+ * - Phía Server (Vercel Serverless Functions / SSR): Dùng biến APP_URL được Vercel Service Binding tiêm vào runtime.
+ * - Phía Client (Browser): Dùng relative path để đi qua Next.js API route handler, hoặc NEXT_PUBLIC_API_URL nếu được chỉ định.
+ */
+function getTargetUrl(endpoint: string): string {
+  const cleanEndpoint = endpoint.replace(/^\/+/, "");
+  if (typeof window === "undefined") {
+    const rawBase = process.env.APP_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000";
+    const base = rawBase.endsWith("/") ? rawBase : `${rawBase}/`;
+    return new URL(cleanEndpoint, base).toString();
+  }
+  const publicBase = (process.env.NEXT_PUBLIC_API_URL || "").replace(/\/+$/, "");
+  return publicBase ? new URL(cleanEndpoint, `${publicBase}/`).toString() : `/${cleanEndpoint}`;
+}
 
 async function request<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-  const url = `${BACKEND_BASE_URL}${endpoint}`;
+  const url = getTargetUrl(endpoint);
   try {
     const res = await fetch(url, {
       ...options,

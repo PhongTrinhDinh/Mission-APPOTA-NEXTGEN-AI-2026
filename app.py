@@ -146,7 +146,6 @@ def root_portal():
             <div style="margin-top: 28px;">
                 <a href="/docs" class="btn">Xem tài liệu Swagger API (/docs)</a>
                 <a href="/api/health" class="btn btn-outline">Kiểm tra Health Check</a>
-                <a href="/gradio" class="btn btn-outline">Gradio UI (/gradio)</a>
             </div>
         </div>
     </body>
@@ -154,30 +153,8 @@ def root_portal():
     """
     return HTMLResponse(content=html_content)
 
-# Tích hợp Gradio UI tương thích với Hugging Face Spaces (SDK: Gradio)
-def _setup_gradio_ui(fastapi_app):
-    try:
-        import gradio as gr
-        with gr.Blocks(title="Appota NextGen Enterprise Secure RAG") as ui:
-            gr.Markdown("# 🚀 Appota NextGen Enterprise Secure RAG Backend")
-            gr.Markdown(
-                "Hệ thống FastAPI Backend phân quyền RBAC & Hybrid Search đang hoạt động và phục vụ API cho Next.js Frontend."
-            )
-            with gr.Row():
-                gr.Markdown("- 📄 **Swagger API Docs:** [/docs](/docs)")
-                gr.Markdown("- 🩺 **Health Check:** [/api/health](/api/health)")
-                gr.Markdown("- 👥 **User Directory:** [/api/users](/api/users)")
-
-        return gr.mount_gradio_app(fastapi_app, ui, path="/gradio")
-    except ImportError:
-        return fastapi_app
-
-app = _setup_gradio_ui(app)
-
-
 if __name__ == "__main__":
     import uvicorn
-    port = int(os.getenv("PORT", 7860))
-    # Chạy uvicorn trực tiếp với app object để giữ tiến trình sống trên Spaces và tránh xung đột cổng
-    uvicorn.run(app, host="0.0.0.0", port=port)
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
 

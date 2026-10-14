@@ -1,14 +1,3 @@
----
-title: Appota NextGen AI RAG Backend
-emoji: 🚀
-colorFrom: blue
-colorTo: indigo
-sdk: gradio
-sdk_version: 5.20.0
-app_file: app.py
-pinned: false
----
-
 # Appota NextGen AI Talent 2026 - Enterprise Secure RAG System
 
 [![Python](https://img.shields.io/badge/Python-3.10%2B-blue.svg)](https://www.python.org/)
